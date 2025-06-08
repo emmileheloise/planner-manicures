@@ -30,19 +30,18 @@ class TipoServicoController {
     }
   }
 
-    obterTipo(index) {
-      try {
-        const tipo = this.tipos[index];
-        if (!tipo) throw new Error("Tipo de serviço não encontrado.");
+  obterTipo(index) {
+  try {
+    const tipo = this.tipos[index];
+    if (!tipo) throw new Error("Tipo de serviço não encontrado.");
 
-        console.log(`\nTipo obtido: ${tipo.Nome} - ${tipo.DuracaoEstimada} - R$${tipo.Preco}`);
-        return tipo;
-      } catch (erro) {
-        console.log(`Erro ao obter tipo de serviço: ${erro.message}`);
-        return null;
-      }
-    }
-
+    console.log(`\nTipo obtido: ${tipo.Nome} - ${tipo.DuracaoEstimada} - R$${tipo.Preco}`);
+    return tipo;
+  } catch (erro) {
+    console.log(`Erro ao obter tipo de serviço: ${erro.message}`);
+    return null;
+  }
+}
 
   removerTipo(index) {
     try {
@@ -59,3 +58,4 @@ class TipoServicoController {
 }
 
 module.exports = TipoServicoController;
+
