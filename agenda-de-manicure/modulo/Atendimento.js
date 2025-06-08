@@ -13,11 +13,11 @@ class Atendimento {
   #cliente;
   #manicure;
 
-  constructor(id, dataHora, formaPagamento, pago, avaliacao, valor, tipoServico, cliente) {
+  constructor(id, dataHora, formaPagamento, pago, avaliacao, valor, tipoServico, cliente, manicure) {
     if (typeof pago !== "boolean") throw new Error("O status de pagamento deve ser booleano.");
     if (!(tipoServico instanceof Servico)) throw new Error("tipoServico precisa ser uma instância de Servico.");
     if (!(cliente instanceof Cliente)) throw new Error("cliente precisa ser uma instância de Cliente.");
-    if (!(manicure instanceof manicure)) throw new Error("manicure precisa ser uma instância de Manicure.");
+    if (!(manicure instanceof Manicure)) throw new Error("manicure precisa ser uma instância de Manicure.");
 
     this.#id = id;
     this.#formaPagamento = formaPagamento;
@@ -31,16 +31,9 @@ class Atendimento {
   }
 
   formatarData(data) {
-    if (data instanceof Date) {
-      return data.toLocaleDateString('pt-BR');
-    } else if (typeof data === 'string') {
-      const partes = data.split('/');
-      if (partes.length === 3) {
-        const [dia, mes, ano] = partes;
-        return `${dia}/${mes}/${ano}`;
-      }
-    }
-    throw new Error("Data inválida");
+    const date = (data instanceof Date) ? data : new Date(data);
+    if (isNaN(date)) throw new Error("Data inválida");
+    return date.toLocaleDateString('pt-BR');
   }
 
   get Id() {
@@ -83,7 +76,7 @@ class Atendimento {
     this.#dataHora = this.formatarData(nova);
   }
 
-   get TipoServico() {
+  get TipoServico() {
     return this.#tipoServico;
   }
   set TipoServico(servico) {
@@ -99,13 +92,18 @@ class Atendimento {
     this.#cliente = cliente;
   }
 
-   get Manicure() {
+  get Manicure() {
     return this.#manicure;
   }
   set Manicure(manicure) {
     if (!(manicure instanceof Manicure)) throw new Error("manicure precisa ser uma instância de Manicure.");
     this.#manicure = manicure;
   }
+
+  resumir() {
+  return `ID: ${this.Id} | Data: ${this.DataHora} | Serviço: ${this.TipoServico.Nome} | Cliente: ${this.Cliente.Nome} | Manicure: ${this.Manicure.Nome} | Valor: R$${this.Valor.toFixed(2)} | Pago: ${this.Pago ? 'Sim' : 'Não'} | Avaliação: ${this.Avaliacao || 'Sem avaliação'} | Pagamento: ${this.FormaPagamento}`;
+}
+
 }
 
 module.exports = Atendimento;
