@@ -35,9 +35,11 @@ class Servico {
   get DuracaoEstimada() {
     return this.#duracaoEstimada;
   }
-  set DuracaoEstimada(novo) {
-    this.#duracaoEstimada = novo;
-  }
+set DuracaoEstimada(novo) {
+  if (typeof novo !== "string") throw new Error("A duração estimada deve ser uma string.");
+  this.#duracaoEstimada = novo;
+}
+
 
   get Preco() {
     return this.#preco;
