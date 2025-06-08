@@ -1,5 +1,6 @@
 const Servico = require('./Servico');
 const Cliente = require('./Cliente');
+const Atendimento = require('./Atendimento'); 
 
 class Agendamento {
   #id;
@@ -11,7 +12,11 @@ class Agendamento {
   #cliente;
 
   constructor(id, dataHora, observacao, valorPrevisto, confirmado, tipoServico, cliente) {
-    if (typeof confirmado !== "boolean") throw new Error("A confirmação precisa ser booleana (true/false).");
+    if (typeof id !== "number") throw new Error("O ID deve ser um número.");
+    if (!(dataHora instanceof Date || typeof dataHora === "string")) throw new Error("DataHora deve ser Date ou string.");
+    if (typeof observacao !== "string") throw new Error("Observação deve ser string.");
+    if (typeof valorPrevisto !== "number") throw new Error("ValorPrevisto deve ser número.");
+    if (typeof confirmado !== "boolean") throw new Error("Confirmado deve ser booleano.");
     if (!(tipoServico instanceof Servico)) throw new Error("tipoServico precisa ser uma instância de Servico.");
     if (!(cliente instanceof Cliente)) throw new Error("cliente precisa ser uma instância de Cliente.");
 
@@ -25,20 +30,17 @@ class Agendamento {
   }
 
   formatarData(data) {
-    if (data instanceof Date) {
-      return data.toLocaleDateString('pt-BR');
-    } else if (typeof data === 'string') {
-      const partes = data.split('/');
-      if (partes.length === 3) {
-        const [dia, mes, ano] = partes;
-        return `${dia}/${mes}/${ano}`;
-      }
-    }
-    throw new Error("Data inválida");
+    const date = (data instanceof Date) ? data : new Date(data);
+    if (isNaN(date)) throw new Error("Data inválida");
+    return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
   }
 
   get Id() {
     return this.#id;
+  }
+  set Id(novo) {
+    if (typeof novo !== "number") throw new Error("O ID deve ser um número.");
+    this.#id = novo;
   }
 
   get DataHora() {
@@ -52,6 +54,7 @@ class Agendamento {
     return this.#observacao;
   }
   set Observacao(nova) {
+    if (typeof nova !== "string") throw new Error("Observação deve ser string.");
     this.#observacao = nova;
   }
 
@@ -59,6 +62,7 @@ class Agendamento {
     return this.#valorPrevisto;
   }
   set ValorPrevisto(novo) {
+    if (typeof novo !== "number") throw new Error("Valor previsto deve ser número.");
     this.#valorPrevisto = novo;
   }
 
@@ -66,10 +70,8 @@ class Agendamento {
     return this.#confirmado;
   }
   set Confirmado(status) {
-    if (typeof status !== "boolean") throw new Error("Confirmação precisa ser booleana.");
-    if (!this.#confirmado && status === true) {
-      this.#confirmado = true;
-    }
+    if (typeof status !== "boolean") throw new Error("Confirmado deve ser booleano.");
+    this.#confirmado = status;
   }
 
   get TipoServico() {
@@ -89,15 +91,35 @@ class Agendamento {
   }
 
   alterarData(novaData) {
-    this.data = novaData;
+    this.DataHora = novaData;
   }
 
   confirmar() {
-    this.#confirmado = true;
+    this.Confirmado = true;
   }
 
   cancelar() {
-    this.#confirmado = false;
+    this.Confirmado = false;
+  }
+
+  resumir() {
+    return `ID: ${this.Id}, DataHora: ${this.DataHora}, Serviço: ${this.TipoServico.Nome}, Cliente: ${this.Cliente.Nome}, Confirmado: ${this.Confirmado}`;
+  }
+
+  gerarAtendimento(avaliacao, formaPagamento, manicure) {
+    if (!manicure) throw new Error("É necessário informar uma manicure.");
+
+    return new Atendimento(
+      null,
+      this.DataHora,
+      formaPagamento,
+      false,
+      avaliacao,
+      this.ValorPrevisto,
+      this.TipoServico,
+      this.Cliente,
+      manicure
+    );
   }
 }
 
